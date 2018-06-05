@@ -17,6 +17,8 @@ import java.util.List;
 
 @WebServlet("/cakes")
 public class CakeServlet extends HttpServlet {
+    private static final String CAKE_JSON_URL =
+            "https://gist.githubusercontent.com/hart88/198f29ec5114a3ec3460/raw/8dd19a88f9b8d24c23d9960f3300d0c917a4f07c/cake.json";
 
     @Override
     public void init() throws ServletException {
@@ -24,9 +26,36 @@ public class CakeServlet extends HttpServlet {
 
         System.out.println("init started");
 
-
         System.out.println("downloading cake json");
-        try (InputStream inputStream = new URL("https://gist.githubusercontent.com/hart88/198f29ec5114a3ec3460/raw/8dd19a88f9b8d24c23d9960f3300d0c917a4f07c/cake.json").openStream()) {
+        loadCakeJson(CAKE_JSON_URL);
+
+        System.out.println("init finished");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<CakeEntity> list = session.createCriteria(CakeEntity.class).list();
+
+        resp.getWriter().println("[");
+
+        for (CakeEntity entity : list) {
+            resp.getWriter().println("\t{");
+
+            resp.getWriter().println("\t\t\"title\" : " + entity.getTitle() + ", ");
+            resp.getWriter().println("\t\t\"desc\" : " + entity.getDescription() + ",");
+            resp.getWriter().println("\t\t\"image\" : " + entity.getImage());
+
+            resp.getWriter().println("\t}");
+        }
+
+        resp.getWriter().println("]");
+
+    }
+
+    private void loadCakeJson(String url) throws ServletException {
+        try (InputStream inputStream = new URL(url).openStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             StringBuffer buffer = new StringBuffer();
@@ -77,30 +106,6 @@ public class CakeServlet extends HttpServlet {
         } catch (Exception ex) {
             throw new ServletException(ex);
         }
-
-        System.out.println("init finished");
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        List<CakeEntity> list = session.createCriteria(CakeEntity.class).list();
-
-        resp.getWriter().println("[");
-
-        for (CakeEntity entity : list) {
-            resp.getWriter().println("\t{");
-
-            resp.getWriter().println("\t\t\"title\" : " + entity.getTitle() + ", ");
-            resp.getWriter().println("\t\t\"desc\" : " + entity.getDescription() + ",");
-            resp.getWriter().println("\t\t\"image\" : " + entity.getImage());
-
-            resp.getWriter().println("\t}");
-        }
-
-        resp.getWriter().println("]");
-
     }
 
 }
