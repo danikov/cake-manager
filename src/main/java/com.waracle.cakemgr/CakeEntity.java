@@ -1,13 +1,14 @@
 package com.waracle.cakemgr;
 
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
 import javax.persistence.*;
 
 @Entity
-@org.hibernate.annotations.Entity(dynamicUpdate = true)
+@DynamicUpdate
 @Table(name = "Cake", uniqueConstraints = {@UniqueConstraint(columnNames = "ID"), @UniqueConstraint(columnNames = "TITLE")})
 @Data
 public class CakeEntity implements Serializable {
