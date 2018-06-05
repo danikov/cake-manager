@@ -36,24 +36,25 @@ public class CakeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        CakeRepository cakeRepo = new CakeRepository();
+        try (CakeRepository cakeRepo = new CakeRepository()) {
+            List<Cake> list = cakeRepo.getAll();
 
-        List<Cake> list = cakeRepo.getAll();
+            resp.getWriter().println("[");
 
-        resp.getWriter().println("[");
+            for (Cake entity : list) {
+                resp.getWriter().println("\t{");
 
-        for (Cake entity : list) {
-            resp.getWriter().println("\t{");
+                resp.getWriter().println("\t\t\"title\" : " + entity.getTitle() + ", ");
+                resp.getWriter().println("\t\t\"desc\" : " + entity.getDescription() + ",");
+                resp.getWriter().println("\t\t\"image\" : " + entity.getImage());
 
-            resp.getWriter().println("\t\t\"title\" : " + entity.getTitle() + ", ");
-            resp.getWriter().println("\t\t\"desc\" : " + entity.getDescription() + ",");
-            resp.getWriter().println("\t\t\"image\" : " + entity.getImage());
+                resp.getWriter().println("\t}");
+            }
 
-            resp.getWriter().println("\t}");
+            resp.getWriter().println("]");
+        } catch (Exception e) {
+            throw new ServletException(e);
         }
-
-        resp.getWriter().println("]");
-
     }
 
     private List<Cake> loadCakeJson(String url) throws ServletException {
@@ -104,23 +105,4 @@ public class CakeServlet extends HttpServlet {
 
         return cakes;
     }
-
-    private void saveCakes(Collection<Cake> cakes) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-
-        cakes.stream().forEach(cake -> {
-            try {
-                session.beginTransaction();
-                session.persist(cake);
-                System.out.println("adding cake entity");
-                session.getTransaction().commit();
-            } catch (ConstraintViolationException ex) {
-                System.err.println("failed to add cake entity");
-                ex.printStackTrace();
-            }
-        });
-
-        session.close();
-    }
-
 }
