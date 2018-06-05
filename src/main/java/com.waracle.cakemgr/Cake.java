@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @DynamicUpdate
-@Table(name = "Cake", uniqueConstraints = {@UniqueConstraint(columnNames = "ID"), @UniqueConstraint(columnNames = "TITLE")})
+@Table(name = "Cake", uniqueConstraints = {@UniqueConstraint(columnNames = "TITLE")})
 @Data
 public class Cake implements Serializable {
     private static final long serialVersionUID = -1798070786993154676L;

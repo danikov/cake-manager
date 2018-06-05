@@ -28,7 +28,7 @@ public class CakeRepoTest {
         session.save(cake);
 
         CakeRepository cakeRepo = new CakeRepository(session);
-        Cake loadedCake = cakeRepo.loadByTitle("Unicorn Cake");
+        Cake loadedCake = cakeRepo.loadBy("Unicorn Cake");
         assertNotNull(loadedCake);
         assertEquals(loadedCake, cake);
     }
