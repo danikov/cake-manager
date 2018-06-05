@@ -1,12 +1,14 @@
 package com.waracle.cakemgr;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 public class HibernateUtil {
-
+    private static final Logger log = LogManager.getLogger(HibernateUtil.class);
     private static SessionFactory sessionFactory = buildSessionFactory();
 
     private static SessionFactory buildSessionFactory() {
@@ -20,7 +22,7 @@ public class HibernateUtil {
             }
             return sessionFactory;
         } catch (Throwable ex) {
-            System.err.println("Initial SessionFactory creation failed." + ex);
+            log.warn("Initial SessionFactory creation failed.", ex);
             throw new ExceptionInInitializerError(ex);
         }
     }

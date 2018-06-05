@@ -1,0 +1,98 @@
+YAML
+
+Configutation:
+  name: Default
+
+  Properties:
+    Property:
+      name: log-path
+      value: "logs"
+
+  Appenders:
+
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+    File:
+      name: File_Appender
+      fileName: ${log-path}/logfile.log
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+  Loggers:
+
+      Root:
+        level: debug
+        AppenderRef:
+          - ref: Console_Appender
+
+      Logger:
+        - name: guru.springframework.blog.log4j2yaml
+          level: debug
+          AppenderRef:
+            - ref: File_Appender
+              level: error
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+Configutation:
+  name: Default
+
+  Properties:
+    Property:
+      name: log-path
+      value: "logs"
+
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+    File:
+      name: File_Appender
+      fileName: ${log-path}/logfile.log
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+  Loggers:
+      Root:
+        level: debug
+        AppenderRef:
+          - ref: Console_Appender

@@ -11,17 +11,18 @@ import static org.junit.Assert.*;
 public class CakeRepoTest {
     private SessionFactory sessionFactory;
     private Session session = null;
+    CakeRepository cakeRepo = null;
 
     @Before
     public void before() {
-        sessionFactory =  HibernateUtil.getSessionFactory();
+        sessionFactory = HibernateUtil.getSessionFactory();
         session = sessionFactory.openSession();
+        cakeRepo = new CakeRepository(session);
     }
 
     @Test
     public void returnsCakeWithMatchingTitle() {
         Cake unicornCake = makeUnicornCake();
-        CakeRepository cakeRepo = new CakeRepository(session);
 
         assertEquals(0, cakeRepo.getAll().size());
         session.save(unicornCake);
@@ -33,7 +34,6 @@ public class CakeRepoTest {
     @Test
     public void savesCake() {
         Cake unicornCake = makeUnicornCake();
-        CakeRepository cakeRepo = new CakeRepository(session);
 
         assertEquals(0, cakeRepo.getAll().size());
         cakeRepo.save(unicornCake);
@@ -55,6 +55,5 @@ public class CakeRepoTest {
     @After
     public void after() {
         session.close();
-        sessionFactory.close();
     }
 }
