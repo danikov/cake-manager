@@ -1,6 +1,8 @@
 package com.waracle.cakemgr;
 
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 
@@ -9,6 +11,8 @@ import java.util.List;
 
 @AllArgsConstructor
 public class CakeRepository implements AutoCloseable {
+    private static final Logger log = LogManager.getLogger(CakeRepository.class);
+
     private final Session session;
 
     public CakeRepository() {
@@ -28,11 +32,10 @@ public class CakeRepository implements AutoCloseable {
         try {
             session.beginTransaction();
             session.persist(cake);
-            System.out.println("Added cake entity");
+            log.info("Added cake: {}", cake);
             session.getTransaction().commit();
         } catch (ConstraintViolationException ex) {
-            System.err.println("Failed to add cake entity");
-            ex.printStackTrace();
+            log.warn("Failed to add cake", ex);
         }
     }
 

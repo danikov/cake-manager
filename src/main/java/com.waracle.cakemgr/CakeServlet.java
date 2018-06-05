@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.google.common.collect.Lists;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @WebServlet("/cakes")
 public class CakeServlet extends HttpServlet {
+    private static final Logger log = LogManager.getLogger(CakeRepository.class);
     private static final String CAKE_JSON_URL =
             "https://gist.githubusercontent.com/hart88/198f29ec5114a3ec3460/raw/8dd19a88f9b8d24c23d9960f3300d0c917a4f07c/cake.json";
 
@@ -23,16 +26,15 @@ public class CakeServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
 
-        System.out.println("init started");
-
-        System.out.println("downloading cake json");
+        log.info("init started");
+        log.info("downloading cake json");
         try (CakeRepository cakeRepo = new CakeRepository()) {
             cakeRepo.save(loadCakeJson(CAKE_JSON_URL));
         } catch (Exception e) {
             throw new ServletException(e);
         }
 
-        System.out.println("init finished");
+        log.info("init finished");
     }
 
     @Override
@@ -71,7 +73,7 @@ public class CakeServlet extends HttpServlet {
                 line = reader.readLine();
             }
 
-            System.out.println("parsing cake json");
+            log.info("parsing cake json");
             JsonParser parser = new JsonFactory().createParser(buffer.toString());
             if (JsonToken.START_ARRAY != parser.nextToken()) {
                 throw new Exception("bad token");
@@ -79,25 +81,25 @@ public class CakeServlet extends HttpServlet {
 
             JsonToken nextToken = parser.nextToken();
             while(nextToken == JsonToken.START_OBJECT) {
-                System.out.println("creating cake entity");
+                log.info("creating cake entity");
 
                 Cake cakeEntity = new Cake();
-                System.out.println(parser.nextFieldName());
+                log.info(parser.nextFieldName());
                 cakeEntity.setTitle(parser.nextTextValue());
 
-                System.out.println(parser.nextFieldName());
+                log.info(parser.nextFieldName());
                 cakeEntity.setDescription(parser.nextTextValue());
 
-                System.out.println(parser.nextFieldName());
+                log.info(parser.nextFieldName());
                 cakeEntity.setImage(parser.nextTextValue());
 
                 cakes.add(cakeEntity);
 
                 nextToken = parser.nextToken();
-                System.out.println(nextToken);
+                log.info(nextToken);
 
                 nextToken = parser.nextToken();
-                System.out.println(nextToken);
+                log.info(nextToken);
             }
 
         } catch (Exception ex) {
