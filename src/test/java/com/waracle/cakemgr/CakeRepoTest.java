@@ -20,17 +20,36 @@ public class CakeRepoTest {
 
     @Test
     public void returnsCakeWithMatchingTitle() {
+        Cake unicornCake = makeUnicornCake();
+        CakeRepository cakeRepo = new CakeRepository(session);
+
+        assertEquals(0, cakeRepo.getAll().size());
+        session.save(unicornCake);
+        Cake loadedCake = cakeRepo.getByTitle("Unicorn Cake");
+        assertNotNull(loadedCake);
+        assertEquals(loadedCake, unicornCake);
+    }
+
+    @Test
+    public void savesCake() {
+        Cake unicornCake = makeUnicornCake();
+        CakeRepository cakeRepo = new CakeRepository(session);
+
+        assertEquals(0, cakeRepo.getAll().size());
+        cakeRepo.save(unicornCake);
+        assertEquals(1, cakeRepo.getAll().size());
+
+        Cake loadedCake = cakeRepo.getByTitle("Unicorn Cake");
+        assertNotNull(loadedCake);
+        assertEquals(loadedCake, unicornCake);
+    }
+
+    private Cake makeUnicornCake() {
         Cake cake = new Cake();
         cake.setTitle("Unicorn Cake");
         cake.setDescription("A rainbow sponge cake with glitter frosting");
         cake.setImage("http://www.cupofsugarpinchofsalt.com/wp-content/uploads/2013/07/RainbowCake-small2.jpg");
-
-        session.save(cake);
-
-        CakeRepository cakeRepo = new CakeRepository(session);
-        Cake loadedCake = cakeRepo.getByTitle("Unicorn Cake");
-        assertNotNull(loadedCake);
-        assertEquals(loadedCake, cake);
+        return cake;
     }
 
     @After

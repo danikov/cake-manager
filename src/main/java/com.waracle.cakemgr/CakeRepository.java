@@ -14,9 +14,11 @@ public class CakeRepository implements AutoCloseable {
     private static final Logger log = LogManager.getLogger(CakeRepository.class);
 
     private final Session session;
+    private final Boolean ownsSession;
 
     public CakeRepository() {
         this.session = HibernateUtil.getSessionFactory().openSession();
+        ownsSession = true;
     }
 
     public Cake getByTitle(String title) {
@@ -45,6 +47,8 @@ public class CakeRepository implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        session.close();
+        if (ownsSession) {
+            session.close();
+        }
     }
 }
