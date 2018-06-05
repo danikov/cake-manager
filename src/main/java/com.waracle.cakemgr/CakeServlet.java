@@ -3,6 +3,7 @@ package com.waracle.cakemgr;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.google.common.collect.Lists;
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 
 @WebServlet("/cakes")
@@ -27,7 +29,7 @@ public class CakeServlet extends HttpServlet {
         System.out.println("init started");
 
         System.out.println("downloading cake json");
-        loadCakeJson(CAKE_JSON_URL);
+        saveCakes(loadCakeJson(CAKE_JSON_URL));
 
         System.out.println("init finished");
     }
@@ -54,7 +56,9 @@ public class CakeServlet extends HttpServlet {
 
     }
 
-    private void loadCakeJson(String url) throws ServletException {
+    private List<CakeEntity> loadCakeJson(String url) throws ServletException {
+        List<CakeEntity> cakes = Lists.newArrayList();
+
         try (InputStream inputStream = new URL(url).openStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -85,16 +89,7 @@ public class CakeServlet extends HttpServlet {
                 System.out.println(parser.nextFieldName());
                 cakeEntity.setImage(parser.nextTextValue());
 
-                Session session = HibernateUtil.getSessionFactory().openSession();
-                try {
-                    session.beginTransaction();
-                    session.persist(cakeEntity);
-                    System.out.println("adding cake entity");
-                    session.getTransaction().commit();
-                } catch (ConstraintViolationException ex) {
-
-                }
-                session.close();
+                cakes.add(cakeEntity);
 
                 nextToken = parser.nextToken();
                 System.out.println(nextToken);
@@ -106,6 +101,26 @@ public class CakeServlet extends HttpServlet {
         } catch (Exception ex) {
             throw new ServletException(ex);
         }
+
+        return cakes;
+    }
+
+    private void saveCakes(Collection<CakeEntity> cakes) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+
+        cakes.stream().forEach(cake -> {
+            try {
+                session.beginTransaction();
+                session.persist(cake);
+                System.out.println("adding cake entity");
+                session.getTransaction().commit();
+            } catch (ConstraintViolationException ex) {
+                System.err.println("failed to add cake entity");
+                ex.printStackTrace();
+            }
+        });
+
+        session.close();
     }
 
 }
