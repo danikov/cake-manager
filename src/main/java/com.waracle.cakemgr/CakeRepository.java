@@ -9,6 +9,10 @@ import java.util.List;
 public class CakeRepository {
     private final Session session;
 
+    public CakeRepository() {
+        this.session = HibernateUtil.getSessionFactory().openSession();
+    }
+
     public Cake loadBy(String title) {
         return (Cake) session.get(Cake.class, title);
     }

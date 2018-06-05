@@ -36,9 +36,9 @@ public class CakeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        CakeRepository cakeRepo = new CakeRepository();
 
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        List<Cake> list = session.createCriteria(Cake.class).list();
+        List<Cake> list = cakeRepo.getAll();
 
         resp.getWriter().println("[");
 
