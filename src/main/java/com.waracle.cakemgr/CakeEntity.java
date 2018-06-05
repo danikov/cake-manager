@@ -1,5 +1,7 @@
 package com.waracle.cakemgr;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
 import javax.persistence.*;
@@ -7,8 +9,8 @@ import javax.persistence.*;
 @Entity
 @org.hibernate.annotations.Entity(dynamicUpdate = true)
 @Table(name = "Employee", uniqueConstraints = {@UniqueConstraint(columnNames = "ID"), @UniqueConstraint(columnNames = "EMAIL")})
+@Data
 public class CakeEntity implements Serializable {
-
     private static final long serialVersionUID = -1798070786993154676L;
 
     @Id
