@@ -15,7 +15,7 @@ public class CakeRepository implements AutoCloseable {
         this.session = HibernateUtil.getSessionFactory().openSession();
     }
 
-    public Cake loadBy(String title) {
+    public Cake getByTitle(String title) {
         return (Cake) session.get(Cake.class, title);
     }
 
@@ -24,7 +24,7 @@ public class CakeRepository implements AutoCloseable {
         return (List<Cake>) session.createCriteria(Cake.class).list();
     }
 
-    public void saveCake(Cake cake) {
+    public void save(Cake cake) {
         try {
             session.beginTransaction();
             session.persist(cake);
@@ -36,8 +36,8 @@ public class CakeRepository implements AutoCloseable {
         }
     }
 
-    private void saveCakes(Collection<Cake> cakes) {
-        cakes.forEach(this::saveCake);
+    public void save(Collection<Cake> cakes) {
+        cakes.forEach(this::save);
     }
 
     @Override

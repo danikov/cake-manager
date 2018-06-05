@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.google.common.collect.Lists;
-import org.hibernate.Session;
-import org.hibernate.exception.ConstraintViolationException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
-import java.util.Collection;
 import java.util.List;
 
 @WebServlet("/cakes")
@@ -29,7 +26,11 @@ public class CakeServlet extends HttpServlet {
         System.out.println("init started");
 
         System.out.println("downloading cake json");
-        saveCakes(loadCakeJson(CAKE_JSON_URL));
+        try (CakeRepository cakeRepo = new CakeRepository()) {
+            cakeRepo.save(loadCakeJson(CAKE_JSON_URL));
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
 
         System.out.println("init finished");
     }
