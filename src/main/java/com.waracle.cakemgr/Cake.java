@@ -11,7 +11,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Table(name = "Cake", uniqueConstraints = {@UniqueConstraint(columnNames = "ID"), @UniqueConstraint(columnNames = "TITLE")})
 @Data
-public class CakeEntity implements Serializable {
+public class Cake implements Serializable {
     private static final long serialVersionUID = -1798070786993154676L;
 
     @Id

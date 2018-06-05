@@ -38,11 +38,11 @@ public class CakeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         Session session = HibernateUtil.getSessionFactory().openSession();
-        List<CakeEntity> list = session.createCriteria(CakeEntity.class).list();
+        List<Cake> list = session.createCriteria(Cake.class).list();
 
         resp.getWriter().println("[");
 
-        for (CakeEntity entity : list) {
+        for (Cake entity : list) {
             resp.getWriter().println("\t{");
 
             resp.getWriter().println("\t\t\"title\" : " + entity.getTitle() + ", ");
@@ -56,8 +56,8 @@ public class CakeServlet extends HttpServlet {
 
     }
 
-    private List<CakeEntity> loadCakeJson(String url) throws ServletException {
-        List<CakeEntity> cakes = Lists.newArrayList();
+    private List<Cake> loadCakeJson(String url) throws ServletException {
+        List<Cake> cakes = Lists.newArrayList();
 
         try (InputStream inputStream = new URL(url).openStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -79,7 +79,7 @@ public class CakeServlet extends HttpServlet {
             while(nextToken == JsonToken.START_OBJECT) {
                 System.out.println("creating cake entity");
 
-                CakeEntity cakeEntity = new CakeEntity();
+                Cake cakeEntity = new Cake();
                 System.out.println(parser.nextFieldName());
                 cakeEntity.setTitle(parser.nextTextValue());
 
@@ -105,7 +105,7 @@ public class CakeServlet extends HttpServlet {
         return cakes;
     }
 
-    private void saveCakes(Collection<CakeEntity> cakes) {
+    private void saveCakes(Collection<Cake> cakes) {
         Session session = HibernateUtil.getSessionFactory().openSession();
 
         cakes.stream().forEach(cake -> {

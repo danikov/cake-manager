@@ -20,7 +20,7 @@ public class CakeRepoTest {
 
     @Test
     public void returnsCakeWithMatchingTitle() {
-        CakeEntity cake = new CakeEntity();
+        Cake cake = new Cake();
         cake.setTitle("Unicorn Cake");
         cake.setDescription("A rainbow sponge cake with glitter frosting");
         cake.setImage("http://www.cupofsugarpinchofsalt.com/wp-content/uploads/2013/07/RainbowCake-small2.jpg");
@@ -28,7 +28,7 @@ public class CakeRepoTest {
         session.save(cake);
 
         CakeRepository cakeRepo = new CakeRepository(session);
-        CakeEntity loadedCake = cakeRepo.loadByTitle("Unicorn Cake");
+        Cake loadedCake = cakeRepo.loadByTitle("Unicorn Cake");
         assertNotNull(loadedCake);
         assertEquals(loadedCake, cake);
     }
