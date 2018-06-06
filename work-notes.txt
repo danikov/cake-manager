@@ -1,0 +1,29 @@
+Changes made:
+    Things work!
+    Updated .gitignore with off-the-shelf github snippet to deal with IntelliJ
+    Ripped out manual JSON serialization and used GSON instead
+    Added a logging library (log4j2) and replaced sys.out calls
+    Added some light testing; could certainly use a lot more
+    Separated out some responsibility into CakeRepository
+    Split out IndexServlet and InitServlet to keep json and html concerns separate
+    Fixed a lot of bugs (e.g. deprecated annotation, leftover copy-paste code, web.xml declaration being wrong/old)
+    Made a very quick/light front page w/ new cake adding
+
+Things not happy with:
+    Update fallback in CakeServlet. Not sure it works 100% of the time and I'm generally less happy having to manage
+    Hibernate manually too much.
+    Kinda cheated on the /cake endpoint giving pretty-print json, but it was a quick fix and I figured, if I had the
+    time, redirecting a working endpoint to another wouldn't be difficult.
+    Tests are very light. Normally I prefer more thorough testing, certainly integration testing once a project has layers.
+    Also didn't use any BDD or get to show off Mockito.
+    UI is definitely placeholder, didn't even use any js libraries. Certainly would iterate on it further.
+
+Thing I might do differently:
+    I'd definitely think about using some technologies to iterate faster:
+        Spring-Boot, in particular Spring-Data provides a lot of niceties on top of Hibernate. Might enable non-embedded
+        and other DB choices for persistence (esp. NOSQL), plus gives you dependency injection (if not Spring, there's
+        Guice or Dagger, etc.)
+        Groovy could offer an incremental path to more code brevity
+        To be a true portable microservice, wrap up in Docker?
+    Project is very flat but is on the threshold of being better organised, e.g. using packages properly.
+    
