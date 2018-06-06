@@ -31,13 +31,7 @@ public class CakeServlet extends HttpServlet {
 
         log.info("init started");
         log.info("downloading cake json");
-        try (CakeRepository cakeRepo = new CakeRepository()) {
-            List<Cake> cakes = loadCakeJson(CAKE_JSON_URL);
-            cakeRepo.save(cakes);
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-
+        loadDefaultCakes(CAKE_JSON_URL);
         log.info("init finished");
     }
 
@@ -52,13 +46,15 @@ public class CakeServlet extends HttpServlet {
         }
     }
 
-    private List<Cake> loadCakeJson(String url) throws ServletException {
-        try (InputStream inputStream = new URL(url).openStream()) {
+    List<Cake> loadDefaultCakes(String url) throws ServletException {
+        try (InputStream inputStream = new URL(url).openStream(); CakeRepository cakeRepo = new CakeRepository()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             Type targetClassType = new TypeToken<ArrayList<Cake>>() { }.getType();
 
             List<Cake> cakes = new Gson().fromJson(reader, targetClassType);
-            return cakes;
+            cakeRepo.save(cakes);
+            return cakeRepo.getAll();
+
         } catch (Exception ex) {
             throw new ServletException(ex);
         }

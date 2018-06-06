@@ -2,7 +2,9 @@ package com.waracle.cakemgr;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.Collection;
@@ -34,13 +36,17 @@ public class CakeRepository implements AutoCloseable {
     }
 
     public void save(Cake cake) {
+        Transaction tx = session.beginTransaction();
         try {
-            session.beginTransaction();
             session.persist(cake);
-            session.getTransaction().commit();
+            tx.commit();
             log.info("Added cake: {}", cake);
         } catch (ConstraintViolationException ex) {
             log.warn("Failed to add cake", ex);
+            tx.rollback();
+        } catch (NonUniqueObjectException ex) {
+            log.warn("Failed to save cake, already exists", ex);
+            tx.rollback();
         }
     }
 

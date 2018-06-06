@@ -1,5 +1,6 @@
 package com.waracle.cakemgr;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -19,6 +20,7 @@ public class Cake implements Serializable {
     private String title;
 
     @Column(name = "DESCRIPTION", unique = false, nullable = false, length = 100)
+    @SerializedName("desc")
     private String description;
 
     @Column(name = "IMAGE", unique = false, nullable = false, length = 300)
