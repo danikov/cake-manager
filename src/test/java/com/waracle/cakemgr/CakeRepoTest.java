@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class CakeRepoTest {
     private SessionFactory sessionFactory;
     private Session session = null;
-    CakeRepository cakeRepo = null;
+    private CakeRepository cakeRepo = null;
 
     @Before
     public void before() {

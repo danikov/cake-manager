@@ -45,7 +45,20 @@ public class CakeRepository implements AutoCloseable {
             log.warn("Failed to add cake", ex);
             tx.rollback();
         } catch (NonUniqueObjectException ex) {
-            log.warn("Failed to save cake, already exists", ex);
+            log.debug("Failed to save cake, already exists, merging instead");
+            tx.rollback();
+            update(cake);
+        }
+    }
+
+    public void update(Cake cake) {
+        Transaction tx = session.beginTransaction();
+        try {
+            session.merge(cake);
+            tx.commit();
+            log.info("Updated cake: {}", cake);
+        } catch (ConstraintViolationException ex) {
+            log.warn("Failed to update cake", ex);
             tx.rollback();
         }
     }
