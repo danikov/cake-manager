@@ -2,7 +2,7 @@ package com.waracle.cakemgr;
 
 import org.junit.Test;
 
-public class CakeServeletTest {
+public class CakeServletTest {
 
     @Test
     public void testServlet() throws Exception {
