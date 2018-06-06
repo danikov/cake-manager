@@ -1,7 +1,3 @@
-<%@ page import="java.util.Enumeration" %>
-<%@ page import="com.waracle.cakemgr.Cake" %>
-<%@ page import="java.util.Arrays" %>
-<%@ page import="java.util.Collections" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <html>

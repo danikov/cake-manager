@@ -1,7 +1,7 @@
 package com.waracle.cakemgr;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -11,13 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/cakes")
@@ -37,7 +31,11 @@ public class CakeServlet extends HttpServlet {
         try (CakeRepository cakeRepo = new CakeRepository()) {
             List<Cake> cakes = cakeRepo.getAll();
 
-            resp.getWriter().println(new Gson().toJson(cakes));
+            Gson gson = req.getHeader("Accept").contains("application/json") ?
+                    new Gson() :
+                    new GsonBuilder().setPrettyPrinting().create();
+
+            resp.getWriter().println(gson.toJson(cakes));
         } catch (IOException | HibernateException e) {
             throw new ServletException(e);
         }
@@ -56,11 +54,10 @@ public class CakeServlet extends HttpServlet {
 
             if (newCake != null) {
                 req.getSession().setAttribute("feedback", "Cake created (or updated)!");
-                resp.sendRedirect("home");
-            }
-            else {
+                resp.sendRedirect("index.gsp");
+            } else {
                 req.setAttribute("feedback", "Bad cake, cannot create!");
-                req.getRequestDispatcher("/login.jsp").forward(req, resp);
+                req.getRequestDispatcher("index.jsp").forward(req, resp);
             }
         } catch (IOException | HibernateException e) {
             throw new ServletException(e);
