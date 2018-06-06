@@ -2,6 +2,7 @@ package com.waracle.cakemgr;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -35,20 +36,19 @@ public class CakeRepository implements AutoCloseable {
         return (List<Cake>) session.createCriteria(Cake.class).list();
     }
 
-    public void save(Cake cake) {
+    public Cake save(Cake cake) {
         Transaction tx = session.beginTransaction();
         try {
             session.persist(cake);
             tx.commit();
             log.info("Added cake: {}", cake);
-        } catch (ConstraintViolationException ex) {
-            log.warn("Failed to add cake", ex);
-            tx.rollback();
-        } catch (NonUniqueObjectException ex) {
+        } catch (ConstraintViolationException | NonUniqueObjectException ex) {
             log.debug("Failed to save cake, already exists, merging instead");
             tx.rollback();
             update(cake);
         }
+
+        return getByTitle(cake.getTitle());
     }
 
     public void update(Cake cake) {
@@ -68,7 +68,7 @@ public class CakeRepository implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws HibernateException {
         if (ownsSession) {
             session.close();
         }

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,42 +22,48 @@ import java.util.List;
 
 @WebServlet("/cakes")
 public class CakeServlet extends HttpServlet {
-    private static final Logger log = LogManager.getLogger(CakeRepository.class);
-    private static final String CAKE_JSON_URL =
-            "https://gist.githubusercontent.com/hart88/198f29ec5114a3ec3460/raw/8dd19a88f9b8d24c23d9960f3300d0c917a4f07c/cake.json";
+    private static final Logger log = LogManager.getLogger(CakeServlet.class);
 
     @Override
     public void init() throws ServletException {
         super.init();
 
         log.info("init started");
-        log.info("downloading cake json");
-        loadDefaultCakes(CAKE_JSON_URL);
         log.info("init finished");
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try (CakeRepository cakeRepo = new CakeRepository()) {
             List<Cake> cakes = cakeRepo.getAll();
 
             resp.getWriter().println(new Gson().toJson(cakes));
-        } catch (Exception e) {
+        } catch (IOException | HibernateException e) {
             throw new ServletException(e);
         }
     }
 
-    List<Cake> loadDefaultCakes(String url) throws ServletException {
-        try (InputStream inputStream = new URL(url).openStream(); CakeRepository cakeRepo = new CakeRepository()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            Type targetClassType = new TypeToken<ArrayList<Cake>>() { }.getType();
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+        try (CakeRepository cakeRepo = new CakeRepository()) {
 
-            List<Cake> cakes = new Gson().fromJson(reader, targetClassType);
-            cakeRepo.save(cakes);
-            return cakeRepo.getAll();
+            Cake newCake = new Cake();
+            newCake.setTitle(req.getParameter("title"));
+            newCake.setDescription(req.getParameter("desc"));
+            newCake.setImage(req.getParameter("image"));
 
-        } catch (Exception ex) {
-            throw new ServletException(ex);
+            newCake = cakeRepo.save(newCake);
+
+            if (newCake != null) {
+                req.getSession().setAttribute("feedback", "Cake created (or updated)!");
+                resp.sendRedirect("home");
+            }
+            else {
+                req.setAttribute("feedback", "Bad cake, cannot create!");
+                req.getRequestDispatcher("/login.jsp").forward(req, resp);
+            }
+        } catch (IOException | HibernateException e) {
+            throw new ServletException(e);
         }
     }
 }

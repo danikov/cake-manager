@@ -22,7 +22,7 @@ public class CakeServletTest {
 
     @Test
     public void testServletInitialisesCorrectly() throws Exception {
-        new CakeServlet().loadDefaultCakes(getClass().getClassLoader().getResource("inital-cakes.json").toString());
+        new InitListener().loadDefaultCakes(getClass().getClassLoader().getResource("inital-cakes.json").toString());
 
         assertEquals(5, cakeRepo.getAll().size());
     }
